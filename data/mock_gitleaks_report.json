@@ -1,0 +1,53 @@
+[
+  {
+    "Description": "AWS Access Key",
+    "StartLine": 12,
+    "EndLine": 12,
+    "StartColumn": 25,
+    "EndColumn": 45,
+    "Match": "AKIAIOSFODNN7EXAMPLE",
+    "Secret": "AKIAIOSFODNN7EXAMPLE",
+    "File": "config/production.json",
+    "Commit": "a1b2c3d4e5f6g7h8i9j0",
+    "Author": "dev-team",
+    "Email": "dev@example.com",
+    "Date": "2023-10-27T10:00:00Z",
+    "Message": "Add production AWS credentials",
+    "Tags": [],
+    "RuleID": "aws-access-token"
+  },
+  {
+    "Description": "GitHub Personal Access Token",
+    "StartLine": 45,
+    "EndLine": 45,
+    "StartColumn": 15,
+    "EndColumn": 55,
+    "Match": "ghp_16C7e42J09L908C3X43M9R64O29T96EXAMPLE",
+    "Secret": "ghp_16C7e42J09L908C3X43M9R64O29T96EXAMPLE",
+    "File": "scripts/deploy.sh",
+    "Commit": "b2c3d4e5f6g7h8i9j0a1",
+    "Author": "ci-bot",
+    "Email": "bot@example.com",
+    "Date": "2023-10-28T11:30:00Z",
+    "Message": "Automate deployment with GitHub token",
+    "Tags": [],
+    "RuleID": "github-pat"
+  },
+  {
+    "Description": "Generic API Key",
+    "StartLine": 5,
+    "EndLine": 5,
+    "StartColumn": 10,
+    "EndColumn": 30,
+    "Match": "api_key_test_1234567",
+    "Secret": "api_key_test_1234567",
+    "File": "tests/integration.py",
+    "Commit": "c3d4e5f6g7h8i9j0a1b2",
+    "Author": "qa-team",
+    "Email": "qa@example.com",
+    "Date": "2023-10-29T14:15:00Z",
+    "Message": "Add integration test api keys",
+    "Tags": [],
+    "RuleID": "generic-api-key"
+  }
+]
