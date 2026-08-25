@@ -1,0 +1,12 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt Flask pytest requests
+
+COPY mock_api/ mock_api/
+COPY bot.py .
+COPY tests/ tests/
+
+EXPOSE 5000
+CMD ["python", "mock_api/server.py"]
