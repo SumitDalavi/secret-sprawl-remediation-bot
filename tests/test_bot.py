@@ -1,19 +1,29 @@
-from bot import generate_jira_payload, load_report
+import pytest
+from src.bot import SecretScanner, RemediationBot
 
-def test_generate_jira_payload():
-    finding = {
-        "File": "config.yml",
-        "Commit": "abc1234",
-        "Author": "Dev",
-        "Email": "dev@example.com",
-        "RuleID": "aws-key",
-        "Description": "AWS Access Key",
-        "Secret": "dummy"
+def test_secret_scanner():
+    scanner = SecretScanner()
+    diff = "+++ b/config.py\n+ api_key = 'abcdef1234567890abcdef1234567890'\n+ normal_var = 'test'"
+    findings = scanner.scan_commit(diff)
+    
+    assert len(findings) == 1
+    assert "abcdef" in findings[0]["line_content"]
+
+def test_aws_key_scanner():
+    scanner = SecretScanner()
+    diff = "+++ b/main.tf\n+ access_key = 'AKIAIOSFODNN7EXAMPLE'"
+    findings = scanner.scan_commit(diff)
+    
+    assert len(findings) == 1
+
+def test_remediation_bot():
+    bot = RemediationBot()
+    payload = {
+        "repository": "test-repo",
+        "diff": "+ api_key = 'abcdef1234567890abcdef1234567890'"
     }
-    status = {"status": "success", "message": "Revoked"}
+    result = bot.process_webhook(payload)
     
-    payload = generate_jira_payload(finding, status)
-    
-    assert payload["fields"]["project"]["key"] == "SECINC"
-    assert "abc1234" in payload["fields"]["description"]
-    assert "Revoked" in payload["fields"]["description"]
+    assert result["secrets_found"] == 1
+    assert len(result["tickets_created"]) == 1
+    assert "SEC-" in result["tickets_created"][0]["ticket_id"]
