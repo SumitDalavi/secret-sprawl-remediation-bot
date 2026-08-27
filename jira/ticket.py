@@ -29,12 +29,10 @@ def create_remediation_ticket(
     failed_revocations = [r for r in results if not r.success]
     summary = f"Secret Sprawl: {len(findings)} secret(s) detected — {len(failed_revocations)} revocation(s) failed"
 
-    finding_lines = "
-".join(
+    finding_lines = "\n".join(
         f"- Line {f.get('line_number', '?')}: {f.get('line_content', '')[:80]}" for f in findings[:10]
     )
-    revocation_lines = "
-".join(
+    revocation_lines = "\n".join(
         f"- [{r.provider.upper()}] {'SUCCESS' if r.success else 'FAILED'}: {r.message}" for r in results
     )
 
