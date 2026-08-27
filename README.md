@@ -85,3 +85,10 @@ If you prefer running it manually:
 **Sumit Dalavi — Senior DevSecOps / Platform Engineer**
 - [GitHub](https://github.com/your-username)
 - [LinkedIn](https://linkedin.com/in/your-profile)
+
+
+## CI & Reliability Updates (August 2026)
+
+- **CI Pipeline Remediation:** Successfully resolved all CI/CD pipeline failures.
+- **Specific Fix:** Added Flask to requirements for successful CI builds and service runtime.
+- **Status:** 🟩 Passing
