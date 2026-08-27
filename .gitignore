@@ -34,3 +34,6 @@ bin/
 htmlcov/
 
 coverage.xml
+
+.venv/
+.terraform/
