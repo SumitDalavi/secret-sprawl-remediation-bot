@@ -15,7 +15,7 @@ import boto3
 from googleapiclient import discovery
 
 import bot as root_bot
-from src.bot import SecretScanner
+from src.bot import GitleaksScanner
 from jira.ticket import create_remediation_ticket
 from notifications.slack import send_remediation_alert
 from revocations.github import revoke_token, RevocationResult
