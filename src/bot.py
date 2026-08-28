@@ -17,30 +17,51 @@ try:
 except Exception:
     redis_client = None
 
-class SecretScanner:
-    def __init__(self):
-        self.secret_patterns = [
-            (re.compile(r'(?i)(api_key|apikey|secret)[=":\s]+([a-zA-Z0-9]{32,})'), "generic"),
-            (re.compile(r'AKIA[0-9A-Z]{16}'), "aws"),
-            (re.compile(r'ghp_[a-zA-Z0-9]{36}'), "github")
-        ]
+import tempfile
+import subprocess
+import json
 
+class GitleaksScanner:
     def scan_commit(self, commit_diff: str):
         findings = []
-        lines = commit_diff.split('\n')
-        for i, line in enumerate(lines):
-            for pattern, provider in self.secret_patterns:
-                match = pattern.search(line)
-                if match:
+        # Write diff to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".diff", mode="w", encoding="utf-8") as temp_file:
+            temp_file.write(commit_diff)
+            temp_file_path = temp_file.name
+
+        try:
+            # Run gitleaks detect on the diff file
+            # gitleaks detect --source temp.diff --report-format json --report-path report.json --no-git
+            report_path = temp_file_path + ".json"
+            subprocess.run([
+                "gitleaks", "detect",
+                "--source", temp_file_path,
+                "--report-format", "json",
+                "--report-path", report_path,
+                "--no-git"
+            ], capture_output=True, text=True)
+
+            if os.path.exists(report_path):
+                with open(report_path, "r", encoding="utf-8") as rf:
+                    report_data = json.load(rf)
+                
+                for finding in report_data:
                     findings.append({
-                        "line_number": i + 1,
-                        "line_content": line.strip(),
-                        "provider": provider,
-                        "secret_match": match.group(0)
+                        "line_number": finding.get("StartLine", 0),
+                        "line_content": finding.get("Match", ""),
+                        "provider": finding.get("RuleID", "generic").lower(),
+                        "secret_match": finding.get("Secret", "")
                     })
+                os.remove(report_path)
+        except Exception as e:
+            print(f"Failed to run gitleaks: {e}")
+        finally:
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
+
         return findings
 
-scanner = SecretScanner()
+scanner = GitleaksScanner()
 
 @app.post("/webhook")
 async def process_webhook(request: Request):
