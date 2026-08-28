@@ -3,7 +3,6 @@ import sys
 from unittest.mock import patch, MagicMock
 
 # Mock out external libraries early
-sys.modules['httpx'] = MagicMock()
 sys.modules['boto3'] = MagicMock()
 sys.modules['google'] = MagicMock()
 sys.modules['google.oauth2'] = MagicMock()
@@ -16,7 +15,7 @@ import boto3
 from googleapiclient import discovery
 
 import bot as root_bot
-from src.bot import RemediationBot, SecretScanner
+from src.bot import SecretScanner
 from jira.ticket import create_remediation_ticket
 from notifications.slack import send_remediation_alert
 from revocations.github import revoke_token, RevocationResult
@@ -65,29 +64,35 @@ def test_root_bot_load_error(tmp_path):
 
 
 # --- src/bot.py ---
+from fastapi.testclient import TestClient
+from src.bot import app
+
+client = TestClient(app)
+
 def test_src_bot():
-    bot = RemediationBot()
     payload = {
         "repository": "my-app",
         "diff": "+++ b/config.py\n+ AWS_KEY = 'AKIAIOSFODNN7EXAMPLE'\n+ key = 'api_key=123456789012345678901234567890123'"
     }
-    res = bot.process_webhook(payload)
-    assert res['secrets_found'] == 2
+    with patch('src.bot.create_remediation_ticket') as mock_ticket, \
+         patch('src.bot.send_remediation_alert') as mock_slack, \
+         patch('src.bot.revoke_token'), \
+         patch('src.bot.deactivate_access_key'):
+        mock_ticket.return_value = "SEC-123"
+        res = client.post("/webhook", json=payload)
+        assert res.status_code == 200
+        data = res.json()
+        assert data['secrets_found'] == 2
 
 def test_src_bot_no_secrets():
-    bot = RemediationBot()
     payload = {
         "repository": "my-app",
         "diff": "+++ b/config.py\n+ nothing interesting"
     }
-    res = bot.process_webhook(payload)
-    assert res['secrets_found'] == 0
-
-def test_src_bot_main():
-    # just run the module as __main__
-    import subprocess
-    import sys
-    subprocess.run([sys.executable, "src/bot.py"], check=True)
+    res = client.post("/webhook", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data['secrets_found'] == 0
 
 
 # --- jira/ticket.py ---

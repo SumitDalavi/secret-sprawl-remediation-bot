@@ -2,11 +2,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt Flask pytest requests
+RUN pip install --no-cache-dir -r requirements.txt Flask pytest requests fastapi uvicorn redis psycopg2-binary sqlalchemy
 
 COPY mock_api/ mock_api/
 COPY bot.py .
+COPY src/ src/
+COPY jira/ jira/
+COPY notifications/ notifications/
+COPY revocations/ revocations/
 COPY tests/ tests/
 
-EXPOSE 5000
-CMD ["python", "mock_api/server.py"]
+EXPOSE 8000
+CMD ["uvicorn", "src.bot:app", "--host", "0.0.0.0", "--port", "8000"]
