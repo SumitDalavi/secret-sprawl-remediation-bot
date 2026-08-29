@@ -1,5 +1,8 @@
 # Secret Sprawl Remediation Bot
 
+> **Maturity:** Functional Prototype
+> _Real closed-loop pipeline: diff scan → credential revocation → Jira ticket → Slack alert. gitleaks binary optional — in-process regex fallback always active. All external APIs (GitHub, AWS, GCP, Jira, Slack) mocked in tests._
+
 A portfolio project demonstrating an advanced DevSecOps incident response pipeline. This bot parses raw secret scanning outputs (like TruffleHog or Gitleaks), automatically calls Identity Providers (IdPs) to revoke the compromised credentials, and generates a Jira ticket payload for tracking.
 
 ## The Problem
@@ -92,8 +95,24 @@ The integration test suite validates the core functionality, failure handling, a
 
 **Run the test suite:**
 ```bash
-npm install
-npm run test
+# Activate the project venv first
+venv\Scripts\activate    # Windows
+# source venv/bin/activate  # Linux/macOS
+
+pytest tests/test_all.py -v
+```
+
+Expected output:
+```
+tests/test_all.py::test_root_bot PASSED
+tests/test_all.py::test_src_bot PASSED          (secrets_found == 2)
+tests/test_all.py::test_src_bot_no_secrets PASSED
+tests/test_all.py::test_jira_ticket PASSED
+tests/test_all.py::test_slack_alert PASSED
+tests/test_all.py::test_github_revoke PASSED
+tests/test_all.py::test_aws_revoke PASSED
+tests/test_all.py::test_gcp_revoke PASSED
+10 passed in ~5s
 ```
 
 ### Performance Benchmarks
@@ -114,12 +133,31 @@ npm run test
 
 ---
 
-## 5. Mock Boundaries (Audit Compliance)
+## 5. Mock Boundaries (Honest Scope)
 
-To comply with strict portfolio audit requirements, we explicitly define the boundaries of what is real vs. simulated:
+| What | Status | Details |
+|---|---|---|
+| Secret scanning (gitleaks) | **Optional** | Falls back to `FALLBACK_PATTERNS` regex if binary not installed |
+| Secret scanning (regex) | **Real** | `_scan_with_regex()` — deterministic, no binary required |
+| GitHub PAT revocation | **Real API call / mocked in tests** | `httpx.delete` to GitHub API; tests mock httpx |
+| AWS key deactivation | **Real API call / mocked in tests** | `boto3` IAM; tests mock boto3 |
+| GCP key deletion | **Real API call / mocked in tests** | `googleapiclient`; tests mock discovery.build |
+| Redis dedup cache | **Optional** | Gracefully skipped if unreachable |
+| Jira ticketing | **Real HTTP / configurable** | Skipped if `JIRA_URL`/`JIRA_TOKEN` not set |
+| Slack alert | **Real HTTP / configurable** | Skipped if `SLACK_WEBHOOK_URL` not set |
 
-- **Fully Implemented:** The core state machine, API routes, database schemas, and integration tests are real and fully functional.
-- **Mocked / Demo Mode:** GitHub scanning APIs and Slack/Jira webhook endpoints are stubbed for safety.
+## 📚 Documentation
+
+- [Architecture](docs/ARCHITECTURE.md) — Mermaid flowchart, component table, fallback patterns
+- [Runbook](docs/runbook.md) — Setup, test commands, webhook usage, failure modes
+- [Decisions](docs/decisions.md) — ADRs for scanner design, two entry points, Redis graceful degradation
+- [Changelog](docs/changelog.md) — Change history
+
+## 🔗 Related Projects
+
+- [`cspm-noise-reduction-agent`](../cspm-noise-reduction-agent/) — Shares the automated security remediation pattern
+- [`nhi-agent-access-governance`](../nhi-agent-access-governance/) — NHI identity access governance complements secret revocation
+- [`secure-dev-platform-demo`](../secure-dev-platform-demo/) — This bot is a component of the secure dev platform flagship demo
 
 ## Author
 

@@ -1,5 +1,8 @@
 import os
 import re
+import tempfile
+import subprocess
+import json
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 import redis
@@ -17,49 +20,93 @@ try:
 except Exception:
     redis_client = None
 
-import tempfile
-import subprocess
-import json
+# ---------------------------------------------------------------------------
+# In-process regex fallback — covers common secret patterns without requiring
+# the gitleaks binary. Used when gitleaks is unavailable or scan fails.
+# ---------------------------------------------------------------------------
+FALLBACK_PATTERNS = [
+    # AWS Access Key IDs
+    ("aws", re.compile(r"AKIA[0-9A-Z]{16}")),
+    # Generic API keys: api_key=<long value>
+    ("generic", re.compile(r"(?i)api[_-]?key\s*[=:]\s*['\"]?([A-Za-z0-9_\-]{20,})['\"]?")),
+    # GitHub PATs (classic and fine-grained)
+    ("github", re.compile(r"ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{82}")),
+    # Generic high-entropy secrets attached to common env var names
+    ("generic", re.compile(r"(?i)(?:secret|password|passwd|token|private_key)\s*[=:]\s*['\"]?([A-Za-z0-9+/]{32,})['\"]?")),
+]
+
 
 class GitleaksScanner:
-    def scan_commit(self, commit_diff: str):
+    def _scan_with_regex(self, commit_diff: str) -> list:
+        """In-process fallback: regex-based secret detection."""
         findings = []
-        # Write diff to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".diff", mode="w", encoding="utf-8") as temp_file:
+        for line_no, line in enumerate(commit_diff.splitlines(), start=1):
+            if not line.startswith("+"):
+                continue
+            for provider, pattern in FALLBACK_PATTERNS:
+                match = pattern.search(line)
+                if match:
+                    findings.append({
+                        "line_number": line_no,
+                        "line_content": line,
+                        "provider": provider,
+                        "secret_match": match.group(0),
+                    })
+                    break  # one finding per line
+        return findings
+
+    def scan_commit(self, commit_diff: str) -> list:
+        """
+        Primary: try gitleaks binary for comprehensive detection.
+        Fallback: in-process regex patterns — deterministic, no binary required.
+        """
+        findings = []
+        gitleaks_ok = False
+
+        with tempfile.NamedTemporaryFile(
+            delete=False, suffix=".diff", mode="w", encoding="utf-8"
+        ) as temp_file:
             temp_file.write(commit_diff)
             temp_file_path = temp_file.name
 
         try:
-            # Run gitleaks detect on the diff file
-            # gitleaks detect --source temp.diff --report-format json --report-path report.json --no-git
             report_path = temp_file_path + ".json"
-            subprocess.run([
-                "gitleaks", "detect",
-                "--source", temp_file_path,
-                "--report-format", "json",
-                "--report-path", report_path,
-                "--no-git"
-            ], capture_output=True, text=True)
-
+            result = subprocess.run(
+                [
+                    "gitleaks", "detect",
+                    "--source", temp_file_path,
+                    "--report-format", "json",
+                    "--report-path", report_path,
+                    "--no-git",
+                ],
+                capture_output=True,
+                text=True,
+            )
             if os.path.exists(report_path):
                 with open(report_path, "r", encoding="utf-8") as rf:
                     report_data = json.load(rf)
-                
                 for finding in report_data:
                     findings.append({
                         "line_number": finding.get("StartLine", 0),
                         "line_content": finding.get("Match", ""),
                         "provider": finding.get("RuleID", "generic").lower(),
-                        "secret_match": finding.get("Secret", "")
+                        "secret_match": finding.get("Secret", ""),
                     })
                 os.remove(report_path)
+                gitleaks_ok = True
+        except FileNotFoundError:
+            pass  # gitleaks not installed — fall through to regex
         except Exception as e:
-            print(f"Failed to run gitleaks: {e}")
+            print(f"gitleaks scan error: {e}")
         finally:
             if os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
 
+        if not gitleaks_ok:
+            findings = self._scan_with_regex(commit_diff)
+
         return findings
+
 
 scanner = GitleaksScanner()
 
