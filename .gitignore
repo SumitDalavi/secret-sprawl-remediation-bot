@@ -37,3 +37,4 @@ coverage.xml
 
 .venv/
 .terraform/
+/test_regex.py
