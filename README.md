@@ -4,6 +4,10 @@
 # Secret Sprawl Remediation Bot
 
 [![Release](https://img.shields.io/github/v/release/SumitDalavi/secret-sprawl-remediation-bot?color=blue&logo=github)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases)
+[![Release Workflow](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/actions/workflows/release.yml/badge.svg)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/actions/workflows/release.yml)
+[![SBOM](https://img.shields.io/badge/SBOM-SPDX%20JSON-blueviolet?logo=spdx)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases)
+
+[![Release](https://img.shields.io/github/v/release/SumitDalavi/secret-sprawl-remediation-bot?color=blue&logo=github)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases)
 [![SBOM](https://img.shields.io/badge/SBOM-SPDX%20JSON-blueviolet?logo=spdx)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases)
 
 > **Maturity:** Functional Prototype
@@ -178,7 +182,7 @@ tests/test_all.py::test_gcp_revoke PASSED
 - **Specific Fix:** Added Flask to requirements for successful CI builds and service runtime.
 - **Status:** 🟩 Passing
 
-## Release & Verification
+## Release & Security Verification
 
 The project includes an automated DevSecOps release pipeline (`.github/workflows/release.yml`) triggered on semantic version tags (`v*.*.*`).
 
@@ -198,3 +202,10 @@ gh release view v0.1.0 --repo SumitDalavi/secret-sprawl-remediation-bot
 gh release download v0.1.0 --repo SumitDalavi/secret-sprawl-remediation-bot --pattern "sbom.spdx.json"
 cat sbom.spdx.json | jq .
 ```
+
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Runbook](docs/runbook.md)
+- [Decisions](docs/decisions.md)
+- [Changelog](docs/changelog.md)
