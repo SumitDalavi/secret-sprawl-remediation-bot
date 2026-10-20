@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secret-sprawl-remediation-bot"
+version = "0.2.0"
+description = "Git secret sprawl detection, remediation, and automated rotation bot"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Sumit Dalavi" }
+]
+dependencies = [
+    "requests",
+    "flask",
+    "fastapi",
+    "uvicorn>=0.24.0",
+    "httpx>=0.27.0",
+    "redis",
+    "sqlalchemy"
+]
+
+[project.scripts]
+secret-bot = "src.bot:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
