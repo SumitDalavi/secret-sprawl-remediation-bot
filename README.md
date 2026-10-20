@@ -1,14 +1,15 @@
 > **NOTE:** This repository is an archival lab or partial prototype. It is not actively maintained and should not be used as a reference for production-grade deployments or performance benchmarks.
 
-
 # Secret Sprawl Remediation Bot
 
-[![Release](https://img.shields.io/github/v/release/SumitDalavi/secret-sprawl-remediation-bot?color=blue&logo=github)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases)
+[![CI Pipeline](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/SumitDalavi/secret-sprawl-remediation-bot?color=0969da&label=release&logo=github)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases)
 [![Release Workflow](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/actions/workflows/release.yml/badge.svg)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/actions/workflows/release.yml)
-[![SBOM](https://img.shields.io/badge/SBOM-SPDX%20JSON-blueviolet?logo=spdx)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases)
-
-[![Release](https://img.shields.io/github/v/release/SumitDalavi/secret-sprawl-remediation-bot?color=blue&logo=github)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases)
-[![SBOM](https://img.shields.io/badge/SBOM-SPDX%20JSON-blueviolet?logo=spdx)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases)
+[![GHCR Container](https://img.shields.io/badge/ghcr.io-v0.2.0-blue?logo=docker&logoColor=white)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/pkgs/container/secret-sprawl-remediation-bot)
+[![PyPI Wheel](https://img.shields.io/badge/wheel-0.2.0-3776ab?logo=pypi&logoColor=white)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases/tag/v0.2.0)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![SBOM](https://img.shields.io/badge/SBOM-SPDX%202.3-blueviolet?logo=spdx)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases/tag/v0.2.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 > **Maturity:** Functional Prototype
 > _Real closed-loop pipeline: diff scan → credential revocation → Jira ticket → Slack alert. gitleaks binary optional — in-process regex fallback always active. All external APIs (GitHub, AWS, GCP, Jira, Slack) mocked in tests._
@@ -92,7 +93,6 @@ If you prefer running it manually:
 | Valid Token (GitHub) | Output shows `[+] SUCCESS: Token successfully revoked.` |
 | Fake/Unknown Token | Output shows `[-] SKIPPED: Token not found or already inactive.` |
 | Jira Payload | A formatted JSON payload is printed to stdout containing the file, commit, and author details. |
-
 
 ---
 
@@ -199,7 +199,6 @@ Enterprise deployment with production-grade backends, security scans, and contai
 **Sumit Dalavi — Senior DevSecOps / Platform Engineer**
 - [GitHub](https://github.com/your-username)
 - [LinkedIn](https://linkedin.com/in/your-profile)
-
 
 ## CI & Reliability Updates (August 2026)
 
