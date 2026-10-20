@@ -234,3 +234,11 @@ cat sbom.spdx.json | jq .
 - [Runbook](docs/runbook.md)
 - [Decisions](docs/decisions.md)
 - [Changelog](docs/changelog.md)
+
+### Python Package & CLI Installation
+Install directly as a standard Python wheel/package:
+```bash
+pip install .
+# Or run the installed CLI console script:
+secret-bot --help
+```
