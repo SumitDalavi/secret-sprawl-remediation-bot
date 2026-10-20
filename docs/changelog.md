@@ -1,5 +1,17 @@
 # Changelog — secret-sprawl-remediation-bot
 
+## [0.2.0] - 2026-10-20
+### Added
+- **Progressive Credential Loading (PCL):** Dynamic auto-promotion between zero-dependency mock fallbacks and live production backends based on environment credentials.
+- **Dual Distribution:** Universal OCI container publishing to GitHub Container Registry (`ghcr.io/sumitdalavi/secret-sprawl-remediation-bot`) and Helm OCI registries alongside GitHub Release tarballs.
+- **Health Reporting:** Exposed `/health` or `/healthz` endpoint with PCL status detection (`mock` vs `live`).
+- **Dynamic Reloading:** Support for atomic ConfigMap / secret reloads without requiring pod restarts.
+- **Supply Chain Security:** Trivy vulnerability scan gates and SPDX JSON SBOM (`sbom.spdx.json`) generation for all releases.
+
+## [0.1.0] - 2026-10-18
+### Added
+- Initial baseline service implementation, unit test suites, and CI workflows.
+
 ## [2026-08-29] — Phase 0 fixes (Portfolio Action Plan)
 ### Fixed
 - `src/bot.py`: Added `FALLBACK_PATTERNS` list (4 compiled regex patterns) and `GitleaksScanner._scan_with_regex()`. When `gitleaks` binary is not in PATH (`FileNotFoundError`), scanner falls back to in-process regex detection on diff `+` lines. Fixes `test_src_bot` assertion (`secrets_found == 2`) which previously got 0 when gitleaks wasn't installed.
