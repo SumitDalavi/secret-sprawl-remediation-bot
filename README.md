@@ -1,5 +1,3 @@
-> **NOTE:** This repository is an archival lab or partial prototype. It is not actively maintained and should not be used as a reference for production-grade deployments or performance benchmarks.
-
 # Secret Sprawl Remediation Bot
 
 [![CI Pipeline](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/actions/workflows/ci.yml)
@@ -181,32 +179,7 @@ Enterprise deployment with production-grade backends, security scans, and contai
 - **Production Orchestration:** Mount secrets via Kubernetes Secrets or cloud secret managers with atomic config reload support.
 - **Release Verification:** Checksums and SPDX SBOM available on [GitHub Releases](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases).
 
-## 📚 Documentation
-
-- [Architecture](docs/ARCHITECTURE.md) — Mermaid flowchart, component table, fallback patterns
-- [Runbook](docs/runbook.md) — Setup, test commands, webhook usage, failure modes
-- [Decisions](docs/decisions.md) — ADRs for scanner design, two entry points, Redis graceful degradation
-- [Changelog](docs/changelog.md) — Change history
-
-## 🔗 Related Projects
-
-- [`cspm-noise-reduction-agent`](../cspm-noise-reduction-agent/) — Shares the automated security remediation pattern
-- [`nhi-agent-access-governance`](../nhi-agent-access-governance/) — NHI identity access governance complements secret revocation
-- [`secure-dev-platform-demo`](../secure-dev-platform-demo/) — This bot is a component of the secure dev platform flagship demo
-
-## Author
-
-**Sumit Dalavi — Senior DevSecOps / Platform Engineer**
-- [GitHub](https://github.com/your-username)
-- [LinkedIn](https://linkedin.com/in/your-profile)
-
-## CI & Reliability Updates (August 2026)
-
-- **CI Pipeline Remediation:** Successfully resolved all CI/CD pipeline failures.
-- **Specific Fix:** Added Flask to requirements for successful CI builds and service runtime.
-- **Status:** 🟩 Passing
-
-## Release & Security Verification
+## 🔒 Release & Security Verification
 
 The project includes an automated DevSecOps release pipeline (`.github/workflows/release.yml`) triggered on semantic version tags (`v*.*.*`).
 
@@ -220,19 +193,19 @@ Each release automatically:
 ### Verifying the Release
 ```bash
 # Verify release via GitHub CLI
-gh release view v0.1.0 --repo SumitDalavi/secret-sprawl-remediation-bot
+gh release view v0.2.0 --repo SumitDalavi/secret-sprawl-remediation-bot
 
 # Download and inspect SBOM
-gh release download v0.1.0 --repo SumitDalavi/secret-sprawl-remediation-bot --pattern "sbom.spdx.json"
+gh release download v0.2.0 --repo SumitDalavi/secret-sprawl-remediation-bot --pattern "sbom.spdx.json"
 cat sbom.spdx.json | jq .
 ```
 
-## Documentation
+## 📚 Documentation
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Runbook](docs/runbook.md)
-- [Decisions](docs/decisions.md)
-- [Changelog](docs/changelog.md)
+- [Architecture](docs/ARCHITECTURE.md) — Mermaid flowchart, component table, fallback patterns
+- [Runbook](docs/runbook.md) — Setup, test commands, webhook usage, failure modes
+- [Decisions](docs/decisions.md) — ADRs for scanner design, two entry points, Redis graceful degradation
+- [Changelog](docs/changelog.md) — Change history
 
 ### Python Package & CLI Installation
 Install directly as a standard Python wheel/package:
@@ -241,3 +214,18 @@ pip install .
 # Or run the installed CLI console script:
 secret-bot --help
 ```
+
+## 🔗 Related Projects
+
+- [`cspm-noise-reduction-agent`](../cspm-noise-reduction-agent/) — Shares the automated security remediation pattern
+- [`nhi-agent-access-governance`](../nhi-agent-access-governance/) — NHI identity access governance complements secret revocation
+- [`secure-dev-platform-demo`](../secure-dev-platform-demo/) — This bot is a component of the secure dev platform flagship demo
+
+## 👨‍💻 Author
+
+**Sumit Dalavi** — Senior DevSecOps / Platform Engineer  
+[GitHub](https://github.com/SumitDalavi) | [LinkedIn](https://in.linkedin.com/in/sumit-dalavi-762838129)
+
+---
+*Built with a focus on robust patterns, not toy demos.*
+
