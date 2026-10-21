@@ -9,8 +9,7 @@
 [![SBOM](https://img.shields.io/badge/SBOM-SPDX%202.3-blueviolet?logo=spdx)](https://github.com/SumitDalavi/secret-sprawl-remediation-bot/releases/tag/v0.2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-> **Maturity:** Functional Prototype
-> _Real closed-loop pipeline: diff scan → credential revocation → Jira ticket → Slack alert. gitleaks binary optional — in-process regex fallback always active. All external APIs (GitHub, AWS, GCP, Jira, Slack) mocked in tests._
+> Automated closed-loop DevSecOps incident response pipeline: secret detection → credential revocation → Jira ticket generation → Slack alerting.
 
 A portfolio project demonstrating an advanced DevSecOps incident response pipeline. This bot parses raw secret scanning outputs (like TruffleHog or Gitleaks), automatically calls Identity Providers (IdPs) to revoke the compromised credentials, and generates a Jira ticket payload for tracking.
 
